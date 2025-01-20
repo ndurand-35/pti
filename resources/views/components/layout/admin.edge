@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title || "Admin Panel - Pti" }}</title>
+
+  <!-- Meta tags -->
+  @if ($slots.meta)
+    {{{ await $slots.meta() }}}
+  @endif
+
+  <!-- CSS et JS via Vite -->
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="bg-primary-700 text-white w-64 p-4">
+      <div class="mb-6">
+        <h1 class="text-xl font-bold">Pti Admin</h1>
+      </div>
+      <nav>
+        <ul class="space-y-4">
+          <li>
+            <a href="/admin/dashboard" class="block text-white hover:bg-primary-600 px-4 py-2 rounded">
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="/admin/urls" class="block text-white hover:bg-primary-600 px-4 py-2 rounded">
+              Manage URLs
+            </a>
+          </li>
+          <li>
+            <a href="/admin/users" class="block text-white hover:bg-primary-600 px-4 py-2 rounded">
+              Users
+            </a>
+          </li>
+          <li>
+            <a href="/admin/settings" class="block text-white hover:bg-primary-600 px-4 py-2 rounded">
+              Settings
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1">
+      <!-- Header -->
+      <header class="bg-primary-500 text-white p-4 shadow">
+        <div class="container mx-auto flex justify-between items-center">
+          <h2 class="text-lg font-bold">{{ title || "Admin Dashboard" }}</h2>
+          <a href="/logout" class="text-white hover:text-gray-200">Logout</a>
+        </div>
+      </header>
+
+      <!-- Main Content Area -->
+      <main class="container mx-auto mt-6 px-4">
+        {{{ await $slots.main() }}}
+      </main>
+
+      <!-- Footer -->
+      <footer class="bg-secondary-800 text-secondary-50 text-center p-4 mt-6">
+        <p>&copy; 2025 Pti Admin. All rights reserved.</p>
+      </footer>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title || "Pti" }}</title>
+
+  <!-- Meta tags spécifiques -->
+  @if ($slots.meta)
+  {{{ await $slots.meta() }}}
+  @endif
+
+  <!-- Inclusion de styles et scripts via Vite -->
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body class="bg-primary-50 text-ternary-900 min-h-screen flex flex-col justify-between">
+  <div></div>
+  <!-- Contenu principal -->
+  <main class="container mx-auto mt-6">
+    {{{ await $slots.main() }}}
+  </main>
+
+  <!-- Pied de page -->
+  <footer class="text-secondary-400 text-center p-4 mt-6">
+    @if ($slots.footer)
+    {{{ await $slots.footer() }}}
+    @endif
+    {{-- <p>&copy; 2025 Pti. Tous droits réservés.</p> --}}
+  </footer>
+</body>
+
+</html>

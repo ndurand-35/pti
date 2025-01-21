@@ -14,6 +14,7 @@ const RedirectController = () => import('#controllers/redirects_controller')
 const AuthController = () => import('#controllers/auth_controller')
 const DashboardController = () => import('#controllers/dashboard_controller')
 const UsersController = () => import('#controllers/users_controller')
+const CampaignsController = () => import('#controllers/campaigns_controller')
 
 router.on('/').render('pages/home')
 
@@ -23,6 +24,7 @@ router.group(() => {
   router.group(() => {
     router.get('/dashboard', [DashboardController, 'showDashboard']).as('dashboard')
     router.resource('users', UsersController).as('users')
+    router.resource('campaigns', CampaignsController).as('campaigns')
   }).middleware(middleware.auth())
 
   /* LOGIN */

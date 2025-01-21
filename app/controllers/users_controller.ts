@@ -12,7 +12,6 @@ export default class UsersController {
     const limit = 10 // Nombre d'utilisateurs par page
 
     const users = await User.query().orderBy('created_at', 'desc').paginate(page, limit) // Récupère les utilisateurs triés par date de création
-    console.log(users)
     return view.render('pages/admin/user/index', { users })
   }
 
@@ -45,7 +44,7 @@ export default class UsersController {
   /**
    * Edit individual record
    */
-  async edit({ params,view }: HttpContext) {
+  async edit({ params, view }: HttpContext) {
     const userId = params.id
     const user = await User.findOrFail(userId)
     return view.render('pages/admin/user/edit', { user })
@@ -54,14 +53,13 @@ export default class UsersController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request,response }: HttpContext) {
+  async update({ params, request, response }: HttpContext) {
     const userId = params.id
-    console.log('Hello')
     const payload = await request.validateUsing(editUserValidator)
 
     const user = await User.findOrFail(userId)
-    user.merge(payload)
-
+    await user.merge(payload)
+    await user.save()
 
     return response.redirect().toRoute('admin.users.index')
   }

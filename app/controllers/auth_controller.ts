@@ -26,7 +26,7 @@ export default class AuthController {
   // Déconnexion
   public async logout({ auth, response }: HttpContext) {
     await auth.use('web').logout()
-    return response.redirect('/login')
+    return response.redirect().toRoute('admin.login.show')
   }
 
   public async showRegister({ view }: HttpContext) {

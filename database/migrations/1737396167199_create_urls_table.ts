@@ -6,7 +6,7 @@ export default class extends BaseSchema {
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary(); // Identifiant unique
-      table.integer('user_id').unsigned().nullable().references('id').inTable('users').onDelete('SET NULL'); // Clé étrangère vers users
+      table.integer('campaign_id').unsigned().nullable().references('id').inTable('campaigns').onDelete('SET NULL'); // Clé étrangère vers campaigns
       table.text('original_url').notNullable(); // URL originale
       table.string('short_url', 255).notNullable().unique(); // URL raccourcie
       table.bigInteger('clicks_count').defaultTo(0); // Nombre de clics

@@ -76,6 +76,20 @@ export default {
       }
     },
   },
+  safelist :[
+    {
+      pattern: /(px|py)-(3|4|6)/, // Padding pour tailles sm, md, lg
+    },
+    {
+      pattern: /text-(sm|md|lg)/, // Tailles de texte
+    },
+    {
+      pattern: /(bg|hover:bg|text|border)-(primary|secondary|ternary|accent|last)-(600|100|700)/, // Couleurs dynamiques et variantes
+    },
+    {
+      pattern: /(opacity-50|cursor-not-allowed|rounded-lg|font-medium|transition|duration-200)/, // Classes globales fixes
+    },
+  ],
   plugins: [],
 }
 

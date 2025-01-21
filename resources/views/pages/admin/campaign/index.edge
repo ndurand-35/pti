@@ -1,0 +1,116 @@
+@layout.admin({ title: 'Gestion des campagnes' })
+
+  @slot('main')
+    <div class="container mx-auto p-6">
+      <div class="flex flex-row justify-between">
+        <h1 class="text-3xl font-bold mb-6">
+          Liste des campagnes
+        </h1>
+        <a
+          href="{{ route('admin.campaigns.create') }}"
+          class="px-4 py-2 h-min text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring focus:ring-primary-300 transition"
+        >
+          Nouveau
+        </a>
+      </div>
+
+      <table class="table-auto w-full bg-white border border-gray-300 rounded-lg">
+        <thead>
+          <tr class="bg-gray-100">
+            <th class="px-4 py-2 border">
+              ID
+            </th>
+            <th class="px-4 py-2 border">
+              Nom
+            </th>
+            <th class="px-4 py-2 border">
+              Date de création
+            </th>
+            <th class="px-4 py-2 border">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @each(campaign in campaigns.rows)
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 border text-center">
+                {{ user.id }}
+              </td>
+              <td class="px-4 py-2 border">
+                {{ user.name }}
+              </td>
+              <td class="px-4 py-2 border">
+                {{ user.createdAt.toFormat('dd/MM/yyyy') }}
+              </td>
+              <td class="px-4 py-2 border">
+                <div class="inline-flex rounded-md shadow-sm" role="group">
+                  <a
+                    href="{{ route('admin.campaigns.edit', { id:  user.id} ) }}"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ternary-500 border 
+                            border-ternary-600 rounded-s-lg hover:bg-ternary-600 transition"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </a>
+                  <button
+                    type="button"
+                    onclick="deleteUser({{ user.id }})"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-500 border 
+                            border-red-600 rounded-e-lg hover:bg-red-600 transition "
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+          @endeach
+          @if(campaigns.rows.length === 0)
+            <tr>
+              <td colspan="4" class="text-center py-4 text-gray-500">
+                Aucune campagnes trouvé.
+              </td>
+            </tr>
+          @endif
+        </tbody>
+      </table>
+      <!-- Pagination -->
+      <div class="flex justify-between items-center mt-4">
+        <a
+          href="{{ route('admin.campaigns.index') }}?page={{ campaigns.currentPage - 1 }}"
+          class="px-4 py-2 bg-gray-200 border rounded hover:bg-gray-300 {{ campaigns.firstPage == campaigns.currentPage ?  'opacity-50 pointer-events-none' : '' }}"
+        >
+          Précédent
+        </a>
+        <span class="text-gray-600">
+          Page {{ campaigns.currentPage }} sur {{ campaigns.lastPage }}
+        </span>
+        <a
+          href="{{ route('admin.campaigns.index') }}?page={{ campaigns.currentPage + 1 }}"
+          class="px-4 py-2 bg-gray-200 border rounded hover:bg-gray-300 {{ !campaigns.hasMorePages ? 'opacity-50 pointer-events-none' : '' }}"
+        >
+          Suivant
+        </a>
+      </div>
+    </div>
+
+    <script>
+      async function deleteUser(userId) {
+        if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
+          const response = await fetch(`{{ route('admin.campaigns.destroy', { id: ':id' }) }}`.replace(":id", userId), {
+            method: "DELETE",
+            headers: {
+              "X-CSRF-TOKEN": "{{ csrfToken }}",
+              "Content-Type": "application/json"
+            }
+          });
+          if (response.ok) {
+            location.reload();
+          } else {
+            alert("Une erreur est survenue lors de la suppression.");
+          }
+        }
+      }
+    </script>
+
+  @endslot
+@end

@@ -1,0 +1,23 @@
+@layout.admin({ title: 'Ajouter une campagne' })
+
+  @slot('main')
+    <div class="container mx-auto p-6">
+      <h1 class="text-3xl font-bold mb-6">
+        Ajouter une campagne
+      </h1>
+
+      {{-- @if(flash.success)
+      <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+        {{ flash.success }}
+      </div>
+      @endif --}}
+
+      <form action="{{ route('admin.campaigns.store') }}" method="POST" class="space-y-4">
+        {{ csrfField() }}
+        @!component('components/input', { label: 'Nom', name :'name', value: old('name') || '', error : flashMessages.get('errors.name') })
+        @!component('components/button', { text : 'Créer', type : 'submit' })
+
+      </form>
+    </div>
+  @endslot
+@end

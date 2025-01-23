@@ -17,5 +17,5 @@ export default class Campaign extends BaseModel {
   declare updatedAt: DateTime
 
   @hasMany(() => Url)
-  declare clicks: HasMany<typeof Url>
+  declare urls: HasMany<typeof Url>
 }

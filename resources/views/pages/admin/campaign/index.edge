@@ -35,28 +35,35 @@
           @each(campaign in campaigns.rows)
             <tr class="hover:bg-gray-50">
               <td class="px-4 py-2 border text-center">
-                {{ user.id }}
+                {{ campaign.id }}
               </td>
               <td class="px-4 py-2 border">
-                {{ user.name }}
+                {{ campaign.name }}
               </td>
               <td class="px-4 py-2 border">
-                {{ user.createdAt.toFormat('dd/MM/yyyy') }}
+                {{ campaign.createdAt.toFormat('dd/MM/yyyy') }}
               </td>
               <td class="px-4 py-2 border">
                 <div class="inline-flex rounded-md shadow-sm" role="group">
                   <a
-                    href="{{ route('admin.campaigns.edit', { id:  user.id} ) }}"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-ternary-500 border 
-                            border-ternary-600 rounded-s-lg hover:bg-ternary-600 transition"
+                  href="{{ route('admin.campaigns.show', { id:  campaign.id} ) }}"
+                  class="inline-flex items-center px-2 py-2 text-sm font-medium text-white bg-primary-500 border 
+                          border-primary-600 rounded-s-lg hover:bg-primary-600 transition"
+                >
+                  <i class="fa-solid fa-eye"></i>
+                </a>
+                  <a
+                    href="{{ route('admin.campaigns.edit', { id:  campaign.id} ) }}"
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-ternary-500 border 
+                            border-ternary-600 hover:bg-ternary-600 transition"
                   >
                     <i class="fa-solid fa-pen-to-square"></i>
                   </a>
                   <button
                     type="button"
-                    onclick="deleteUser({{ user.id }})"
-                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-500 border 
-                            border-red-600 rounded-e-lg hover:bg-red-600 transition "
+                    onclick="deleteCampaign({{ campaign.id }})"
+                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-accent-500 border 
+                            border-accent-600 rounded-e-lg hover:bg-accent-600 transition "
                   >
                     <i class="fa-solid fa-trash"></i>
                   </a>
@@ -94,9 +101,9 @@
     </div>
 
     <script>
-      async function deleteUser(userId) {
-        if (confirm("Voulez-vous vraiment supprimer cet utilisateur ?")) {
-          const response = await fetch(`{{ route('admin.campaigns.destroy', { id: ':id' }) }}`.replace(":id", userId), {
+      async function deleteCampaign(campaignId) {
+        if (confirm("Voulez-vous vraiment supprimer cet campagne ?")) {
+          const response = await fetch(`{{ route('admin.campaigns.destroy', { id: ':id' }) }}`.replace(":id", campaignId), {
             method: "DELETE",
             headers: {
               "X-CSRF-TOKEN": "{{ csrfToken }}",

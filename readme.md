@@ -1,0 +1,1 @@
+https://github.com/arasatasaygin/openlogos/blob/master/docs/logos/hangry-birds-guide.jpg

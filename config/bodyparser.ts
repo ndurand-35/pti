@@ -28,7 +28,6 @@ const bodyParserConfig = defineConfig({
       'application/csp-report',
     ],
   },
-
   /**
    * Config for the "multipart/form-data" content-type parser.
    * File uploads are handled by the multipart parser.

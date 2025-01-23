@@ -10,7 +10,7 @@
             </a>
           </div>
           <h1 class="text-3xl font-bold">
-            Liste des URLS
+            {{ campaign.name }} - Liste des URLS
           </h1>
         </div>
         <div>
@@ -20,12 +20,12 @@
           >
             Nouveau
         </a>
-          <a
-            href="{{ route('admin.campaigns.create') }}"
+          <button
+            onclick="displayUploadModal()"
             class="px-4 py-2 h-min text-white bg-accent-600 hover:bg-accent-700 focus:outline-none focus:ring focus:ring-accent-300 transition"
           >
             <i class="fa-solid fa-upload"></i>
-          </a>
+          </button>
           <a
             href="{{ route('admin.campaigns.create') }}"
             class="px-4 py-2 h-min text-white bg-secondary-600 rounded-e-lg hover:bg-secondary-700 focus:outline-none focus:ring focus:ring-secondary-300 transition"
@@ -35,7 +35,7 @@
         </div>
       </div>
 
-      <table class="table-auto w-full bg-white border border-gray-300 rounded-lg">
+      <table id="urlDatatable" class="table-auto w-full">
         <thead>
           <tr class="bg-gray-100">
             <th class="px-4 py-2 border">
@@ -48,57 +48,71 @@
               Lien Originel
             </th>
             <th class="px-4 py-2 border">
-              Date de création
+              Click
             </th>
             <th class="px-4 py-2 border">
-              Action
+              Campagne
+            </th>
+            <th class="px-4 py-2 border">
+              Date de création
+            </th>
+
+            <th class="px-4 py-2 border">
+              Expires At
             </th>
           </tr>
         </thead>
         <tbody>
-          @each(url in campaign.urls)
-            <tr class="hover:bg-gray-50">
-              <td class="px-4 py-2 border text-center">
-                {{ url.id }}
-              </td>
-              <td class="px-4 py-2 border flex flex-row space-x-2 items-center">
-                {{ url.shortUrl }}
-                <div class="relative">
-                  <button
-                    type="button"
-                    onclick="copyToClipboardWithCustomPopover(this, '{{ url.shortUrl }}')"
-                    onmouseenter="showCustomPopover(this)"
-                    onmouseleave="hideCustomPopover(this)"
-                  >
-                    <i class="fa-solid fa-copy"></i>
-                  </button>
-                  <span
-                    class="popover-text absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 px-2 py-1 text-xs text-white bg-gray-800 rounded opacity-0 transition-opacity"
-                  >
-                    Copier l'URL
-                  </span>
-                </div>
-              </td>
-              <td class="px-4 py-2 border">
-                {{ url.originalUrl }}
-              </td>
-              <td class="px-4 py-2 border">
-                {{ url.createdAt.toFormat('dd/MM/yyyy') }}
-              </td>
-              <td class="px-4 py-2 border">
-              </td>
-            </tr>
-          @endeach
-          @if(campaign.urls.length === 0)
-            <tr>
-              <td colspan="4" class="text-center py-4 text-gray-500">
-                Aucune URL trouvé.
-              </td>
-            </tr>
-          @endif
         </tbody>
       </table>
     </div>
+    @!component('components/upload-modal', {
+      modalId: 'excelUploadModal',
+      action: route('admin.urls.upload.excel'),
+    campaigns: campaigns,
+    campaign: campaign  })
+
+    <script>
+      $(document).ready(function() {
+        let table = $("#urlDatatable").DataTable({
+          processing: true,
+          serverSide: true,
+          ajax: {
+            url: "{{ route('admin.urls.datatable') }}",
+            type: "GET"
+          },
+          language: {
+            url: "/js/datatable/fr-FR.json"
+          },
+          columns: [ {
+            data: "id",
+            name: "id"
+          }, {
+            data: "shortUrl",
+            name: "shortUrl"
+          }, {
+            data: "originalUrl",
+            name: "originalUrl"
+          }, {
+            data: "clicksCount",
+            name: "clicksCount"
+          }, {
+            name: "campaignId",
+            data: "campaign"
+          }, {
+            data: "createdAt",
+            name: "createdAt",
+            searchable: false
+          }, {
+            data: "expiresAt",
+            name: "expiresAt",
+            searchable: false
+          } ]
+        });
+        const column = table.column("campaignId:name");
+        column.search({{campaign.id}} || "", false, false).draw();
+      });
+    </script>
 
     <script>
       async function deleteCampaign(campaignId) {

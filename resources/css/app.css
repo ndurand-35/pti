@@ -1,3 +1,76 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-primary-50: #fcedf2;
+  --color-primary-100: #fadce5;
+  --color-primary-200: #f4b8cb;
+  --color-primary-300: #f099b5;
+  --color-primary-400: #ea769b;
+  --color-primary-500: #e55381;
+  --color-primary-600: #d9215b;
+  --color-primary-700: #a41945;
+  --color-primary-800: #6a102d;
+  --color-primary-900: #350816;
+  --color-primary-950: #1b040b;
+
+  --color-secondary-50: #fdf6f7;
+  --color-secondary-100: #fceeef;
+  --color-secondary-200: #f9ddde;
+  --color-secondary-300: #f5cbce;
+  --color-secondary-400: #f2babe;
+  --color-secondary-500: #efa9ae;
+  --color-secondary-600: #e2646d;
+  --color-secondary-700: #ce2632;
+  --color-secondary-800: #8a1a21;
+  --color-secondary-900: #450d11;
+  --color-secondary-950: #220608;
+
+  --color-accent-50: #f6f6f4;
+  --color-accent-100: #eaeae6;
+  --color-accent-200: #d8d7d0;
+  --color-accent-300: #c3c2b7;
+  --color-accent-400: #b0afa0;
+  --color-accent-500: #9b9987;
+  --color-accent-600: #807e6b;
+  --color-accent-700: #5f5d4f;
+  --color-accent-800: #403f35;
+  --color-accent-900: #1f1e19;
+  --color-accent-950: #11100e;
+
+  --color-ternary-50: #f1eef0;
+  --color-ternary-100: #e3dee1;
+  --color-ternary-200: #c5bac1;
+  --color-ternary-300: #a998a3;
+  --color-ternary-400: #8b7483;
+  --color-ternary-500: #685762;
+  --color-ternary-600: #53464f;
+  --color-ternary-700: #40353c;
+  --color-ternary-800: #2a2327;
+  --color-ternary-900: #161315;
+  --color-ternary-950: #0b090a;
+
+  --color-last-50: #e8dbf5;
+  --color-last-100: #d0b7eb;
+  --color-last-200: #a16fd7;
+  --color-last-300: #7333b8;
+  --color-last-400: #461f70;
+  --color-last-500: #190b28;
+  --color-last-600: #140920;
+  --color-last-700: #0f0718;
+  --color-last-800: #0a0410;
+  --color-last-900: #050208;
+  --color-last-950: #030104;
+
+  --font-display: 'Satoshi', 'sans-serif'; /* Exemple de font */
+  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.dosis {
+  font-family: 'Dosis', serif;
+  font-optical-sizing: auto;
+}
+body {
+  font-family: 'Open Sans', serif;
+  font-optical-sizing: auto;
+}

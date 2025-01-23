@@ -17,53 +17,53 @@ export default class CampaignsController {
   /**
    * Display form to create a new record
    */
-  async create({view}: HttpContext) {
+  async create({ view }: HttpContext) {
     return view.render('pages/admin/campaign/create')
   }
 
   /**
    * Handle form submission for the create action
    */
-  async store({ request,response }: HttpContext) {
+  async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createCampaign)
     await Campaign.create(payload)
 
     return response.redirect().toRoute('admin.campaigns.index')
-
   }
 
   /**
    * Show individual record
    */
-  async show({ params,view }: HttpContext) {
+  async show({ params, view }: HttpContext) {
     const campaignId = params.id
     const campaign = await Campaign.findOrFail(campaignId)
     await campaign.load('urls')
-    return view.render('pages/admin/campaign/show', { campaign })
 
+    const campaigns = await Campaign.query()
+    return view.render('pages/admin/campaign/show', { campaign, campaigns })
   }
 
   /**
    * Edit individual record
    */
-  async edit({ params,view }: HttpContext) {
-        const campaignId = params.id
-        const campaign = await Campaign.findOrFail(campaignId)
-        return view.render('pages/admin/campaign/edit', { campaign })
+  async edit({ params, view }: HttpContext) {
+    const campaignId = params.id
+    const campaign = await Campaign.findOrFail(campaignId)
+    return view.render('pages/admin/campaign/edit', { campaign })
   }
 
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request,response }: HttpContext) {
-      const campaignId = params.id
-        const payload = await request.validateUsing(createCampaign)
-    
-        const campaign = await Campaign.findOrFail(campaignId)
-        await campaign.merge(payload)
-        await campaign.save()
-    
-        return response.redirect().toRoute('admin.campaigns.index')
+  async update({ params, request, response }: HttpContext) {
+    const campaignId = params.id
+    const payload = await request.validateUsing(createCampaign)
+
+    const campaign = await Campaign.findOrFail(campaignId)
+    await campaign.merge(payload)
+    await campaign.save()
+
+    return response.redirect().toRoute('admin.campaigns.index')
   }
 
   /**

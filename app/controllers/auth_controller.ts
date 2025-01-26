@@ -6,7 +6,6 @@ export default class AuthController {
 
   public async showLogin({ view, response }: HttpContext) {
     const userExists = await User.query().first()
-    console.log(userExists)
     if (!userExists) {
       return response.redirect().toRoute('admin.register.show')
     }

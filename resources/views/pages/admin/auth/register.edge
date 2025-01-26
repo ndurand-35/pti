@@ -3,9 +3,12 @@
   @slot('main')
     <div class="flex items-center justify-center">
       <div class="w-full max-w-md p-8 space-y-4 bg-white rounded-lg shadow-md">
-        <h1 class="text-2xl font-bold mb-5">
+        <h1 class="dosis text-2xl text-center font-bold mb-5">
           Créer un compte
         </h1>
+        <p class="text-ternary-400 text-sm">
+          Bienvenue sur Pti, lors de la 1ère utilisation, vous êtes invité à créer un compte administrateur
+        </p>
         @flashMessage('notification')
           <div class="p-4 mb-4 text-sm text-green-800 bg-green-100 rounded-lg">
             {{ $message.message }}

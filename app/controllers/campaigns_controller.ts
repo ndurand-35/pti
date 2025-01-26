@@ -26,9 +26,9 @@ export default class CampaignsController {
    */
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createCampaign)
-    await Campaign.create(payload)
+    const campaign = await Campaign.create(payload)
 
-    return response.redirect().toRoute('admin.campaigns.index')
+    return response.redirect().toRoute('admin.campaigns.show', { id: campaign.id })
   }
 
   /**

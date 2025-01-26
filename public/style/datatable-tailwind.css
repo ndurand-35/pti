@@ -1,0 +1,196 @@
+:root {
+  --dt-primary: var(--color-primary-500);
+  --dt-primary-light: var(--color-primary-200);
+  --dt-accent: var(--color-accent-500);
+  --dt-accent-dark: var(--color-accent-600);
+}
+
+.dark:root {
+  --dt-primary-light: #103c37;
+}
+
+/* LOADER */
+div.dt-processing > div:last-child > div {
+  background: var(--dt-primary);
+}
+
+/* THEAD ORDER ICON */
+table.dataTable thead > tr > th.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > th.dt-ordering-desc span.dt-column-order:after,
+table.dataTable thead > tr > td.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead > tr > td.dt-ordering-desc span.dt-column-order:after {
+  opacity: 1;
+  color: var(--dt-primary);
+}
+
+/* SEARCH INPUT */
+div.dt-container .dt-search {
+  display: flex;
+  flex-direction: row;
+  align-items: end;
+  justify-content: space-between;
+  width: 100%;
+}
+
+div.dt-container .dt-search .dt-input {
+  padding: 0.5rem 0.5rem 0.5rem 2.5rem !important;
+  background: white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E")
+    no-repeat 13px center;
+}
+
+div.dt-container .dt-search .dt-input:hover,
+div.dt-container .dt-search .dt-input:active,
+div.dt-container .dt-search .dt-input:focus {
+  border-color: var(--dt-primary);
+}
+
+/* Pagination */
+div.dt-container .dt-paging {
+  height: 2rem !important;
+  display: inline-flex;
+}
+
+div.dt-container .dt-paging .dt-paging-button,
+div.dt-container .dt-paging .ellipsis,
+div.dt-container .dt-paging .dt-paging-button.disabled {
+  color: #6b7280 !important;
+  border-color: #d1d5db;
+  border-width: 1px !important;
+  height: 2rem !important;
+  display: flex;
+  margin-left: -1px;
+  padding: 0 0.75rem !important;
+  justify-content: center;
+  align-items: center;
+}
+
+div.dt-container .dt-paging .dt-paging-button:first-child {
+  border-start-start-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+}
+
+div.dt-container .dt-paging .dt-paging-button:last-child {
+  border-start-end-radius: 0.5rem;
+  border-end-end-radius: 0.5rem;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+  font-weight: bold;
+  color: var(--dt-primary) !important;
+  background: none;
+  background-color: var(--dt-primary-light) !important;
+  border-color: #d1d5db;
+  border-width: 1px !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.disabled,
+div.dt-container .dt-paging .dt-paging-button.disabled:hover,
+div.dt-container .dt-paging .dt-paging-button.disabled:active {
+  cursor: not-allowed;
+  color: gray !important;
+  border: 1px solid #d1d5db;
+  background: none;
+  background-color: #f3f4f6;
+  box-shadow: none;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current:hover {
+  font-weight: bold;
+  color: var(--dt-primary) !important;
+  background-color: var(--dt-primary-light) !important;
+  border-color: #d1d5db;
+  border-width: 1px !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover,
+div.dt-container .dt-paging .dt-paging-button:active {
+  color: gray !important;
+  background: none;
+  background-color: #f3f4f6 !important;
+}
+
+/* ENTRY LENGTH */
+div.dt-container select.dt-input {
+  padding: 0.1rem 2rem 0.1rem 0.5rem;
+  min-width: 100px;
+}
+
+div.dt-container select.dt-input:active,
+div.dt-container select.dt-input:focus {
+  border-color: var(--dt-primary);
+  --tw-ring-opacity: 1;
+  --tw-ring-color: rgb(42 157 143 / var(--tw-ring-opacity));
+}
+
+/*.dt-button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    border-radius: .25rem;
+    border: 1px solid var(--dt-accent);
+    color: var(--dt-accent);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+}
+
+.dt-button:hover {
+    background: var(--dt-accent);
+    color: white;
+}*/
+
+/* =========== DARK =========== */
+.dark div.dt-container .dt-search .dt-input {
+  color: #f4f4f5;
+  background: #3f3f46
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' class='bi bi-search' viewBox='0 0 16 16'%3E%3Cpath fill='%23f4f4f5' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'%3E%3C/path%3E%3C/svg%3E")
+    no-repeat 13px center;
+}
+
+.dark div.dt-container .dt-paging .dt-paging-button,
+.dark div.dt-container .dt-paging .ellipsis,
+.dark div.dt-container .dt-paging .dt-paging-button.disabled {
+  background-color: #3f3f46;
+  border-color: #52525b;
+  color: #f4f4f5 !important;
+}
+
+.dark div.dt-container .dt-paging .dt-paging-button.current {
+  color: var(--dt-primary) !important;
+}
+
+.dark div.dt-container .dt-paging .dt-paging-button.current:hover {
+  font-weight: bold;
+  color: var(--dt-primary) !important;
+  background-color: var(--dt-primary-light) !important;
+  border-width: 1px !important;
+}
+
+.dark div.dt-container .dt-paging .dt-paging-button:hover,
+.dark div.dt-container .dt-paging .dt-paging-button:active {
+  border-color: #52525b;
+  background-color: #52525b !important;
+}
+
+.dark div.dt-container .dt-paging .dt-paging-button.disabled,
+.dark div.dt-container .dt-paging .dt-paging-button.disabled:hover,
+.dark div.dt-container .dt-paging .dt-paging-button.disabled:active {
+  cursor: not-allowed;
+  color: gray !important;
+  border: 1px solid #52525b;
+  background: none;
+  background-color: #52525b;
+  box-shadow: none;
+}
+
+.dark div.dt-container select.dt-input {
+  border-color: #52525b;
+  background-color: #3f3f46 !important;
+}
+
+.dark div.dt-container .dt-length,
+.dark div.dt-container .dt-info {
+  color: #f4f4f5 !important;
+}

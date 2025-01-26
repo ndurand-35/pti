@@ -1,9 +1,17 @@
 import { DateTime } from 'luxon'
-import { BaseModel, belongsTo, column, hasMany, beforeCreate } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  belongsTo,
+  column,
+  hasMany,
+  beforeCreate,
+  manyToMany,
+} from '@adonisjs/lucid/orm'
 import Click from './click.js'
-import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import Campaign from './campaign.js'
-import { nanoid } from 'nanoid'
+import { customAlphabet } from 'nanoid'
+import Tag from './tag.js'
 
 export default class Url extends BaseModel {
   @column({ isPrimary: true })
@@ -16,11 +24,14 @@ export default class Url extends BaseModel {
   declare originalUrl: string
 
   @column()
+  declare matchingKey: string
+
+  @column()
   declare shortUrl: string
 
   @column()
   declare clicksCount: number
-  
+
   @column()
   declare campaignId: number | null
 
@@ -39,6 +50,9 @@ export default class Url extends BaseModel {
   @hasMany(() => Click)
   declare clicks: HasMany<typeof Click>
 
+  @manyToMany(() => Tag, { pivotTable: 'url_tag' })
+  declare tags: ManyToMany<typeof Tag>
+
   /**
    * Hook exécuté avant la création d'un enregistrement
    */
@@ -53,6 +67,10 @@ export default class Url extends BaseModel {
    */
   private static async generateUniqueShortUrl(): Promise<string> {
     const slugLength = 6
+
+    // Définir un alphabet personnalisé sans caractères spéciaux
+    const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    const nanoid = customAlphabet(alphabet, slugLength)
 
     while (true) {
       // Génération d'un shortUrl

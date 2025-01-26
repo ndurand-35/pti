@@ -31,6 +31,9 @@ router
           .as('campaigns.url.create')
 
         router.get('/urls/datatable', [UrlsController, 'datatable']).as('urls.datatable')
+        router
+          .get('/urls/datatable/excel', [UrlsController, 'datatableExcel'])
+          .as('urls.datatable.excel')
         router.resource('urls', UrlsController).as('urls')
         router.post('/urls/upload-excel', [UrlsController, 'upload']).as('urls.upload.excel')
       })

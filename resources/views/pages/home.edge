@@ -1,83 +1,144 @@
 @layout.app({ title: "Welcome page title" })
 
-@slot('meta')
-<meta name="description"
-  content="Shorten and manage your links with ease. Track clicks and enhance your campaigns with our powerful tools.">
-@endslot
-
-@slot('main')
-<div class="bg-white">
-  <!-- Hero Section -->
-  <section class="bg-blue-600 text-white py-16 text-center">
-    <div class="container mx-auto px-4">
-      <h1 class="text-4xl font-bold">Shorten, Manage, and Track Your Links</h1>
-      <p class="mt-4 text-lg">Boost your campaigns with powerful link management tools.</p>
-      <div class="mt-6">
-        <form method="POST" action="/shorten" class="flex justify-center">
-          <input type="url" name="original_url" placeholder="Paste your link here" required
-            class="w-2/3 md:w-1/2 px-4 py-3 rounded-l-lg focus:outline-none" />
-          <button type="submit" class="bg-white text-blue-600 font-bold px-6 py-3 rounded-r-lg hover:bg-gray-100">
-            Shorten
+  @slot('meta')
+    <meta
+      name="description"
+      content="Shorten and manage your links with ease. Track clicks and enhance your campaigns with our powerful tools."
+    />
+  @endslot
+  
+  @slot('main')
+    <div class="mb-6 flex flex-row justify-center px-2 items-center">
+      <img src="/images/logo.png" class="w-24" />
+      <h1 class="dosis text-4xl font-bold">
+        Pti
+      </h1>
+    </div>
+    <div class="bg-white">
+      <!-- Hero Section -->
+      <section class="bg-primary-600 text-white py-16 text-center">
+        <div class="container mx-auto px-4">
+          <h1 class="text-4xl font-bold">
+            Raccourcir, gérer et suivre vos liens
+          </h1>
+          <p class="mt-4 text-lg">
+            Boostez vos campagnes grâce à de puissants outils de gestion des liens.
+          </p>
+          {{-- <div class="mt-6">
+            <form method="POST" action="/shorten" class="flex justify-center">
+              <input
+                type="url"
+                name="original_url"
+                placeholder="Paste your link here"
+                required
+                class="w-2/3 md:w-1/2 px-4 py-3 rounded-l-lg focus:outline-none"
+              />
+              <button type="submit" class="bg-white text-blue-600 font-bold px-6 py-3 rounded-r-lg hover:bg-gray-100">
+                Shorten
           </button>
-        </form>
-      </div>
-    </div>
-  </section>
+            </form>
+          </div> --}}
+        </div>
+      </section>
 
-  <!-- Features Section -->
-  <section class="py-16">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-8">Why Choose Us?</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Feature 1 -->
-        <div class="text-center">
-          <div class="mb-4 text-blue-600">
-            <svg class="w-12 h-12 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1 4v-4m-4 0h.01M4 16v-4a4 4 0 014-4h.01m4 0h.01M4 8h16" />
-            </svg>
+      <!-- Features Section -->
+      <section class="py-16">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold text-center mb-8">
+            Pourquoi nous choisir ?
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="text-center">
+              <div class="mb-4 text-secondary-600">
+                <svg
+                  class="w-12 h-12 mx-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1 4v-4m-4 0h.01M4 16v-4a4 4 0 014-4h.01m4 0h.01M4 8h16"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold">
+                Gestion facile des liens
+              </h3>
+              <p class="mt-2 text-gray-600">
+                Organisez et suivez vos liens en un seul endroit, en toute simplicité.
+              </p>
+            </div>
+            <!-- Feature 2 -->
+            <div class="text-center">
+              <div class="mb-4 text-secondary-600">
+                <svg
+                  class="w-12 h-12 mx-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l4-8 4 8m0 0l-4-8-4 8z" />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold">
+                Analyse détaillée
+              </h3>
+              <p class="mt-2 text-gray-600">
+                Obtenez des informations sur votre public grâce à une analyse détaillée des clics.
+              </p>
+            </div>
+            <!-- Feature 3 -->
+            <div class="text-center">
+              <div class="mb-4 text-secondary-600">
+                <svg
+                  class="w-12 h-12 mx-auto"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.75 21H6.75a2.25 2.25 0 01-2.25-2.25v-5.25H9.75z"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-xl font-bold">
+                Liens courts personnalisés
+              </h3>
+              <p class="mt-2 text-gray-600">
+                Marquez vos liens pour augmenter la confiance et le taux de clics.
+              </p>
+            </div>
           </div>
-          <h3 class="text-xl font-bold">Easy Link Management</h3>
-          <p class="mt-2 text-gray-600">Organize and track your links in one place with ease.</p>
         </div>
-        <!-- Feature 2 -->
-        <div class="text-center">
-          <div class="mb-4 text-blue-600">
-            <svg class="w-12 h-12 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l4-8 4 8m0 0l-4-8-4 8z" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold">Detailed Analytics</h3>
-          <p class="mt-2 text-gray-600">Gain insights into your audience with detailed click analytics.</p>
-        </div>
-        <!-- Feature 3 -->
-        <div class="text-center">
-          <div class="mb-4 text-blue-600">
-            <svg class="w-12 h-12 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9.75 21H6.75a2.25 2.25 0 01-2.25-2.25v-5.25H9.75z" />
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold">Custom Short Links</h3>
-          <p class="mt-2 text-gray-600">Brand your links to boost trust and click-through rates.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-  <!-- Call to Action -->
-  <section class="bg-gray-100 py-16 text-center">
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold">Ready to Get Started?</h2>
-      <p class="mt-4 text-gray-700">Sign up now and take control of your links today.</p>
-      <a href="/register" class="mt-6 inline-block px-8 py-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
-        Sign Up for Free
+      <!-- Call to Action -->
+      {{-- <section class="bg-gray-100 py-16 text-center">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold">
+            Ready to Get Started?
+          </h2>
+          <p class="mt-4 text-gray-700">
+            Sign up now and take control of your links today.
+          </p>
+          <a
+            href="/register"
+            class="mt-6 inline-block px-8 py-4 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+          >
+            Sign Up for Free
       </a>
+        </div>
+      </section> --}}
     </div>
-  </section>
-</div>
-@endslot
+  @endslot
 @end

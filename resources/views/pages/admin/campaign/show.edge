@@ -26,39 +26,44 @@
           >
             <i class="fa-solid fa-upload"></i>
           </button>
-          <a
+          {{-- <a
             href="{{ route('admin.campaigns.create') }}"
             class="px-4 py-2 h-min text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 focus:outline-none focus:ring focus:ring-secondary-300 transition"
           >
             <i class="fa-solid fa-download"></i>
-          </a>
+          </a> --}}
         </div>
       </div>
 
       <table id="urlDatatable" class="table-auto w-full">
-        <thead>
-          <tr class="bg-gray-100">
-            <th class="px-4 py-2 border">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th class="px-4 py-2">
               ID
             </th>
-            <th class="px-4 py-2 border">
+            <th class="px-4 py-2">
               Url
             </th>
-            <th class="px-4 py-2 border">
+            <th class="px-4 py-2">
               Lien Originel
             </th>
-            <th class="px-4 py-2 border">
+            <th class="px-4 py-2">
+              Key
+            </th>
+            <th class="px-4 py-2">
               Click
             </th>
-            <th class="px-4 py-2 border">
+            <th class="px-4 py-2">
               Campagne
             </th>
-            <th class="px-4 py-2 border">
+            <th class="px-4 py-2">
               Date de création
             </th>
-
-            <th class="px-4 py-2 border">
+            <th class="px-4 py-2">
               Expires At
+            </th>
+            <th class="px-4 py-2">
+              Action
             </th>
           </tr>
         </thead>
@@ -75,30 +80,76 @@
     <script>
       $(document).ready(function() {
         let table = $("#urlDatatable").DataTable({
-          processing: true,
-          serverSide: true,
-          ajax: {
-            url: "{{ route('admin.urls.datatable') }}",
-            type: "GET"
+          ...defaultDatatableConfig,
+          layout: {
+            topStart: "search",
+            bottomStart: "pageLength",
+            bottom2Start: "info",
+            bottomEnd: "paging",
+            topEnd: {
+              buttons: [ {
+                text: '<i class="fa-solid fa-file-excel"></i>',
+                className: "cursor-pointer text-accent-500 mt-2 border border-accent-500 hover:bg-accent-500 hover:text-white py-2 px-2.5 rounded text-lg inline-flex transition",
+                action: function(e, dt, node, config) {
+                  const btn = e.currentTarget;
+                  const icon = btn.querySelector("i");
+                  btn.disabled = true;
+                  icon.classList.remove("fa-file-excel", "text-red-400", "fa-circle-exclamation");
+                  icon.classList.add("animate-spin", "fa-spinner");
+                  $.ajax({
+                    url: "{{ route('admin.urls.datatable.excel')}}",
+                    data: dt.ajax.params(),
+                    success: function(res, status, xhr) {
+                      if (res && res.file) {
+                        const link = document.createElement("a");
+                        link.href = res.file;
+                        link.setAttribute("download", `export_${Date.now()}.xlsx`);
+                        document.body.append(link);
+                        link.click();
+                        link.remove();
+                        btn.disabled = false;
+                        icon.classList.add("fa-file-excel");
+                        icon.classList.remove("animate-spin", "fa-spinner");
+                      }
+                    },
+                    error: () => {
+                      btn.disabled = false;
+                      icon.classList.add("fa-circle-exclamation", "text-red-400");
+                      icon.classList.remove("animate-spin", "fa-spinner");
+                    }
+                  });
+                }
+              } ]
+            }
           },
-          language: {
-            url: "/js/datatable/fr-FR.json"
+          ajax: {
+            url: "{{ route('admin.urls.datatable') }}"
           },
           columns: [ {
             data: "id",
             name: "id"
           }, {
             data: "shortUrl",
-            name: "shortUrl"
+            name: "shortUrl",
+            render: data => {
+              return `<a href="/${data}" target="_blank" class="hover:text-primary-600 transition">${data}<i class="ml-2 fa-solid fa-link"></i></a>`;
+            }
           }, {
             data: "originalUrl",
-            name: "originalUrl"
+            name: "originalUrl",
+            render: data => {
+              return `<a href="${data}" target="_blank" class="hover:text-primary-600 transition"><i class="fa-solid fa-link"></i></a>`;
+            }
+          }, {
+            data: "matchingKey",
+            name: "matchingKey"
           }, {
             data: "clicksCount",
             name: "clicksCount"
           }, {
             name: "campaignId",
-            data: "campaign"
+            data: "campaign",
+            visible: false
           }, {
             data: "createdAt",
             name: "createdAt",
@@ -107,17 +158,47 @@
             data: "expiresAt",
             name: "expiresAt",
             searchable: false
+          }, {
+            data: "action",
+            name: "action",
+            searchable: false,
+            orderable: false,
+            class: "space-x-2 dt-tools",
+            render: createManageBtn
           } ]
         });
         const column = table.column("campaignId:name");
         column.search({{campaign.id}} || "", false, false).draw();
+        /* SUPRESSION CATCHER */
+        table.on("click", "td.dt-tools .delete-button", function(e) {
+          const data = table.row(e.target.closest("tr")).data();
+          deleteUrl(data.id);
+        });
       });
+    </script>
+    <script>
+      const BUTTON_COMMON_CLASS = [ "text-center", "inline-flex", "items-center", "transition", "duration-300", "ease-in-out", "cursor-pointer" ];
+      
+      function createManageBtn(data, type, row) {
+        let buttonDiv = document.createElement("div");
+        buttonDiv.classList.add(...[ "flex", "flex-row", "space-x-2" ]);
+        /* Bouton de suppression */
+        let deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.id = "delete-button";
+        deleteButton.classList.add(...[ "tooltip", "delete-button", "text-red-500", "hover:text-red-700", ...BUTTON_COMMON_CLASS ]);
+        let deleteButtonIcon = document.createElement("i");
+        deleteButtonIcon.classList.add(...[ "text-md", "fas", "fa-trash" ]);
+        deleteButton.appendChild(deleteButtonIcon);
+        buttonDiv.appendChild(deleteButton);
+        return buttonDiv.outerHTML;
+      }
     </script>
 
     <script>
-      async function deleteCampaign(campaignId) {
-        if (confirm("Voulez-vous vraiment supprimer cet campagne ?")) {
-          const response = await fetch(`{{ route('admin.campaigns.destroy', { id: ':id' }) }}`.replace(":id", campaignId), {
+      async function deleteUrl(urlId) {
+        if (confirm("Voulez-vous vraiment supprimer cet URL ?")) {
+          const response = await fetch(`{{ route('admin.urls.destroy', { id: ':id' }) }}`.replace(":id", urlId), {
             method: "DELETE",
             headers: {
               "X-CSRF-TOKEN": "{{ csrfToken }}",

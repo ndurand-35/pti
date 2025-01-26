@@ -3,7 +3,9 @@ import Url from '#models/url'
 import { createUrl } from '#validators/urls'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import { column } from '@adonisjs/lucid/orm'
 import xlsx from 'xlsx'
+import { applyColumnFilter, applyGlobalFilter } from '../helpers/querySql.js'
 
 export default class UrlsController {
   /**
@@ -64,7 +66,11 @@ export default class UrlsController {
   /**
    * Delete record
    */
-  async destroy({ params }: HttpContext) {}
+  async destroy({ params }: HttpContext) {
+    const urlId = params.id
+    const url = await Url.findOrFail(urlId)
+    await url.delete()
+  }
 
   async upload({ request, response, session }: HttpContext) {
     // Récupération du fichier Excel
@@ -102,28 +108,47 @@ export default class UrlsController {
       const sheet = workbook.Sheets[sheetName]
 
       // Convertir les données de la feuille en JSON
-      const data = xlsx.utils.sheet_to_json(sheet)
+      const data = xlsx.utils.sheet_to_json<{ URL?: string; Key?: string }>(sheet)
 
-      // Ajouter une colonne avec l'URL générée
-      const updatedData = data.map((row: any, index) => {
-        const generatedUrl = `https://example.com/campaign/${campaign.id}/row/${index + 1}`
-        return {
+      // Vérifier si la colonne "URL" est présente
+      if (data.length === 0 || !data[0].URL) {
+        session.flash({ error: 'La colonne "URL" est manquante dans le fichier.' })
+        return response.redirect().back()
+      }
+
+      // Liste pour stocker les URLs générées
+      const updatedData = []
+
+      for (const [_, row] of data.entries()) {
+        if (!row.URL) continue
+
+        // Enregistrement de l'URL dans la base de données
+        const url = await Url.create({
+          originalUrl: row.URL,
+          matchingKey: row.Key ?? '',
+          campaignId: campaign.id,
+          clicksCount: 0, // Initialiser les clics à 0
+          expiresAt: null, // Définir une date d'expiration si besoin
+        })
+
+        // Ajouter la ligne mise à jour dans la liste
+        updatedData.push({
           ...row,
-          GeneratedURL: generatedUrl,
-        }
-      })
+          shortUrl: url.shortUrl, // Nouvelle colonne avec l'URL générée
+        })
+      }
 
-      // Convertir les données mises à jour en feuille Excel
+      // Convertir les données mises à jour en une nouvelle feuille Excel
       const updatedSheet = xlsx.utils.json_to_sheet(updatedData)
       const updatedWorkbook = xlsx.utils.book_new()
       xlsx.utils.book_append_sheet(updatedWorkbook, updatedSheet, sheetName)
 
-      // Sauvegarder le nouveau fichier Excel dans un répertoire temporaire
+      // Sauvegarder le fichier Excel modifié dans un répertoire temporaire
       const newFileName = `updated_${file.clientName}`
       const filePath = app.tmpPath(`uploads/${newFileName}`)
       xlsx.writeFile(updatedWorkbook, filePath)
 
-      // Retourner le fichier Excel modifié en réponse
+      // Retourner le fichier Excel mis à jour en réponse
       response.header(
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -155,29 +180,10 @@ export default class UrlsController {
 
     // Filtrage par recherche global
     if (searchValue) {
-      query.where((builder) => {
-        builder
-          .where('originalUrl', 'like', `%${searchValue}%`)
-          .orWhere('shortUrl', 'like', `%${searchValue}%`)
-          .orWhereHas('campaign', (campaignQuery) => {
-            campaignQuery.where('name', 'like', `%${searchValue}%`)
-          })
-      })
+      applyGlobalFilter(query, columns, searchValue)
     }
 
-    // Filtrage par recherche spécifique à chaque colonne
-    columns.forEach((col: any) => {
-      if (col.searchable === 'true' && col.search.value) {
-        const searchValue = col.search.value
-        if (col.name) {
-          // Si la colonne est une relation (campaign), utiliser whereHas
-          if (col.name === 'campaignId') {
-            // Sinon, utiliser le nom du champ directement
-            query.where(col.name, '=', `${searchValue}`)
-          }
-        }
-      }
-    })
+    applyColumnFilter(query, columns)
 
     // Tri
     const orderColumn = columns[orderColumnIndex]?.name || 'createdAt' // Utiliser le nom du champ pour le tri
@@ -198,6 +204,7 @@ export default class UrlsController {
       id: url.id,
       originalUrl: url.originalUrl,
       shortUrl: url.shortUrl,
+      matchingKey: url.matchingKey,
       clicksCount: url.clicksCount,
       campaign: url.campaign ? url.campaign.name : 'N/A', // Afficher le nom de la campagne ou 'N/A'
       createdAt: url.createdAt.toFormat('dd/MM/yyyy HH:mm:ss'), // Formater la date de création
@@ -209,6 +216,60 @@ export default class UrlsController {
       recordsTotal: totalRecords[0].$extras.total,
       recordsFiltered: totalRecords[0].$extras.total,
       data,
+    })
+  }
+
+  async datatableExcel({ request, response }: HttpContext) {
+    const searchValue = request.input('search.value') // Valeur de recherche
+
+    // Récupérer les informations sur les colonnes
+    const columns = request.input('columns')
+
+    // Construction de la requête de base avec jointure sur la campagne
+    let query = Url.query()
+      .preload('campaign') // Charger la relation campaign
+      .select('urls.*') // Sélectionner toutes les colonnes de la table urls
+
+    // Filtrage par recherche global
+    if (searchValue) {
+      applyGlobalFilter(query, columns, searchValue)
+    }
+
+    applyColumnFilter(query, columns)
+
+    // Exécuter la requête pour obtenir les résultats<hu
+    const urls = await query.exec()
+
+    // Préparer les données pour le fichier Excel
+    const data = urls.map((url) => ({
+      'ID': url.id,
+      'Original URL': url.originalUrl,
+      'Short URL': url.shortUrl,
+      'Key': url.matchingKey,
+      'Clicks Count': url.clicksCount,
+      'Campaign Name': url.campaign?.name || 'N/A', // Utiliser le nom de la campagne ou 'N/A' si non définie
+      'Created At': url.createdAt.toFormat('yyyy-MM-dd HH:mm:ss'), // Formater la date
+      'Expires At': url.expiresAt ? url.expiresAt.toFormat('yyyy-MM-dd HH:mm:ss') : 'N/A', // Formater la date si elle existe
+    }))
+
+    // Créer un nouveau classeur Excel
+    const workbook = xlsx.utils.book_new()
+
+    // Convertir les données en feuille de calcul
+    const worksheet = xlsx.utils.json_to_sheet(data)
+
+    // Ajouter la feuille de calcul au classeur
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'URLs')
+
+    // Générer le fichier Excel en mémoire
+    const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' })
+
+    // Convertir le buffer en base64
+    const base64 = buffer.toString('base64')
+
+    // Retourner la réponse JSON avec le fichier encodé en base64
+    return response.json({
+      file: `data:application/vnd.ms-excel;base64,${base64}`,
     })
   }
 }

@@ -14,6 +14,7 @@ export default class extends BaseSchema {
         .inTable('campaigns')
         .onDelete('SET NULL') // Clé étrangère vers campaigns
       table.text('original_url').notNullable() // URL originale
+      table.string('matching_key', 255) // Clé de matching import
       table.string('short_url', 255).notNullable().unique() // URL raccourcie
       table.bigInteger('clicks_count').defaultTo(0) // Nombre de clics
       table.timestamp('expires_at', { useTz: true }).nullable() // Date d'expiration

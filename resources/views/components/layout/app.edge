@@ -1,38 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ title || "Pti" }}</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {{ title || "Pti" }}
+    </title>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
 
-  <!-- Meta tags spécifiques -->
-  @if ($slots.meta)
-  {{{ await $slots.meta() }}}
-  @endif
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- Inclusion de styles et scripts via Vite -->
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-
-<body class="bg-primary-50 text-ternary-900 min-h-screen flex flex-col justify-between">
-  <div></div>
-  <!-- Contenu principal -->
-  <main class="container mx-auto mt-6">
-    {{{ await $slots.main() }}}
-  </main>
-
-  <!-- Pied de page -->
-  <footer class="text-secondary-400 text-center p-4 mt-6">
-    @if ($slots.footer)
-    {{{ await $slots.footer() }}}
+    <!-- Meta tags spécifiques -->
+    @if ($slots.meta)
+      {{{ await $slots.meta() }}}
     @endif
-    {{-- <p>&copy; 2025 Pti. Tous droits réservés.</p> --}}
-  </footer>
-</body>
+    
+    <!-- Inclusion de styles et scripts via Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+  </head>
+
+  <body class="bg-primary-50 text-ternary-900 min-h-screen flex flex-col justify-between">
+    <div>
+    </div>
+    <!-- Contenu principal -->
+    <main class="container mx-auto mt-6">
+      {{{ await $slots.main() }}}
+    </main>
+
+    <!-- Pied de page -->
+    <footer class="text-secondary-400 text-center p-4 mt-6">
+      @if ($slots.footer)
+        {{{ await $slots.footer() }}}
+      @endif
+      {{-- <p>&copy; 2025 Pti. Tous droits réservés.</p> --}}
+    </footer>
+  </body>
 
 </html>

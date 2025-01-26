@@ -26,6 +26,9 @@ router
         router.get('/dashboard', [DashboardController, 'showDashboard']).as('dashboard')
         router.resource('users', UsersController).as('users')
         router.resource('campaigns', CampaignsController).as('campaigns')
+        router
+          .get('/campaigns/:campaignId/urls/create', [UrlsController, 'create'])
+          .as('campaigns.url.create')
 
         router.get('/urls/datatable', [UrlsController, 'datatable']).as('urls.datatable')
         router.resource('urls', UrlsController).as('urls')

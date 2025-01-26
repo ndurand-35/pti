@@ -6,11 +6,23 @@
         Ajouter une URL
       </h1>
 
-      {{ inspect(flashMessages.all())}}
-
+      {{-- {{ inspect(flashMessages.all()) }} --}}
       <form action="{{ route('admin.urls.store') }}" method="POST" class="space-y-4">
         {{ csrfField() }}
         @!component('components/input', { label: 'Url', name :'originalUrl', value: old('originalUrl') || '', error : flashMessages.get('errors.originalUrl') })
+        @!component('components/multi-select', {
+          name: "tags",
+          tags: [
+            { id: 1, name: 'JavaScript' },
+            { id: 2, name: 'Node.js' },
+            { id: 3, name: 'EdgeJS' },
+            { id: 4, name: 'HTML' },
+            { id: 5, name: 'CSS' }
+          ],
+          selectedValues: [
+        2,4
+          ] // Tags sélectionnés par défaut (Node.js et HTML)
+        })
 
         <select
           name="campaignId"
@@ -19,14 +31,19 @@
           <option>
           </option>
           @each(sCampaign in campaigns)
-            <option value="{{ sCampaign.id }}">
-              {{ sCampaign.name }}
-            </option>
-          @end
-        </select>
+            @if(campaign && campaign.id === sCampaign.id)
+              <option value="{{ sCampaign.id }}" selected>
+              @else
+                <option value="{{ sCampaign.id }}">
+                @end
+                
+                {{ sCampaign.name }}
+              </option>
+            @end
+          </select>
 
-        @!component('components/button', { text : 'Créer', type : 'submit' })
-      </form>
-    </div>
-  @endslot
-@end
+          @!component('components/button', { text : 'Créer', type : 'submit' })
+        </form>
+      </div>
+    @endslot
+  @end

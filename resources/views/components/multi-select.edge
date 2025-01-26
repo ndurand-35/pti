@@ -1,0 +1,153 @@
+<div class="tag-select relative">
+  <!-- Champ de saisie pour ajouter ou filtrer des tags -->
+  <div class="mb-4">
+    <input
+      type="text"
+      id="tag-input"
+      placeholder="Saisissez ou sélectionnez un tag..."
+      class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+      oninput="filterTags()"
+      onclick="showDropdown()"
+    />
+  </div>
+
+  <!-- Dropdown pour afficher les tags existants -->
+  <div
+    id="tag-dropdown"
+    class="hidden absolute z-10 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-48 overflow-y-auto"
+  >
+    @each(tag in tags)
+      <div
+        id="tag-{{ tag.id }}"
+        class="tag-option px-4 py-2 text-sm text-gray-700 hover:bg-indigo-100 cursor-pointer flex items-center justify-between"
+        onclick="toggleTag('{{ tag.id }}', '{{ tag.name }}')"
+      >
+        <span>{{ tag.name }}</span>
+        <span id="indicator-{{ tag.id }}" class="hidden text-green-500 text-sm font-medium">
+          ✓
+        </span>
+      </div>
+    @endeach
+  </div>
+
+  <!-- Liste des tags sélectionnés -->
+  <div id="selected-tags" class="flex flex-wrap gap-2 mb-4">
+  </div>
+</div>
+
+<script>
+  // Afficher le dropdown
+  function showDropdown() {
+    document.getElementById("tag-dropdown").classList.remove("hidden");
+    updateDropdownIndicators();
+  }
+  // Filtrer les tags
+  
+  function filterTags() {
+    const input = document.getElementById("tag-input");
+    const filter = input.value.toLowerCase();
+    const dropdown = document.getElementById("tag-dropdown");
+    const options = dropdown.getElementsByClassName("tag-option");
+    dropdown.classList.remove("hidden"); // Afficher le dropdown
+    Array.from(options).forEach(option => {
+      option.style.display = option.textContent.toLowerCase().includes(filter) ? "block" : "none";
+    });
+  }
+  // Basculer l'état de sélection d'un tag
+  
+  function toggleTag(tagId, tagName) {
+    const tagElement = document.querySelector(`span[data-tag-id="${tagId}"]`);
+    if (tagElement) {
+      // Si le tag est déjà sélectionné, on le retire
+      removeTag(tagId);
+    } else {
+      // Sinon, on l'ajoute
+      selectTag(tagId, tagName);
+    }
+  }
+  // Sélectionner un tag
+  
+  function selectTag(tagId, tagName) {
+    const selectedTags = document.getElementById("selected-tags");
+    // Éviter les doublons
+    if (document.querySelector(`span[data-tag-id="${tagId}"]`)) return;
+    // Créer un tag visuel
+    const tagElement = document.createElement("span");
+    tagElement.className = "bg-indigo-100 text-indigo-800 text-sm font-medium px-2.5 py-0.5 rounded";
+    tagElement.setAttribute("data-tag-id", tagId);
+    tagElement.innerHTML = `
+        ${tagName}
+        <button
+          type="button"
+          onclick="removeTag('${tagId}')"
+          class="ml-1 text-indigo-600 hover:text-indigo-900"
+        >
+          &times;
+        </button>
+      `;
+    selectedTags.appendChild(tagElement);
+    // Ajouter un champ caché pour le formulaire existant
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "tags[]";
+    hiddenInput.value = tagId;
+    hiddenInput.id = `input-${tagId}`;
+    document.querySelector("form").appendChild(hiddenInput);
+    document.getElementById("tag-input").value = "";
+    updateDropdownIndicators();
+  }
+  // Supprimer un tag
+  
+  function removeTag(tagId) {
+    const tagElement = document.querySelector(`span[data-tag-id="${tagId}"]`);
+    if (tagElement) {
+      tagElement.remove();
+    }
+    // Supprimer l'entrée cachée associée dans le formulaire
+    const hiddenInput = document.getElementById(`input-${tagId}`);
+    if (hiddenInput) {
+      hiddenInput.remove();
+    }
+    updateDropdownIndicators();
+  }
+  // Mettre à jour les indicateurs visuels dans le dropdown
+  
+  function updateDropdownIndicators() {
+    const selectedTags = document.querySelectorAll("#selected-tags span[data-tag-id]");
+    const selectedIds = Array.from(selectedTags).map(tag => tag.getAttribute("data-tag-id"));
+    const options = document.querySelectorAll(".tag-option");
+    options.forEach(option => {
+      const tagId = option.id.replace("tag-", "");
+      const indicator = document.getElementById(`indicator-${tagId}`);
+      if (selectedIds.includes(tagId)) {
+        indicator.classList.remove("hidden");
+      } else {
+        indicator.classList.add("hidden");
+      }
+    });
+  }
+  // Ajout avec la touche "Entrée"
+  
+  document.getElementById("tag-input").addEventListener("keypress", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const input = document.getElementById("tag-input");
+      const tagName = input.value.trim();
+      if (tagName) {
+        // Crée un ID unique temporaire pour le nouveau tag
+        const tempId = `temp-${Math.random().toString(36).substr(2, 9)}`;
+        selectTag(tempId, tagName);
+        input.value = "";
+      }
+    }
+  });
+  // Fermer le dropdown quand on clique ailleurs
+  
+  document.addEventListener("click", event => {
+    const dropdown = document.getElementById("tag-dropdown");
+    const input = document.getElementById("tag-input");
+    if (event.target !== input && !dropdown.contains(event.target)) {
+      dropdown.classList.add("hidden");
+    }
+  });
+</script>

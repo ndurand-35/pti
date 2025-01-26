@@ -59,7 +59,7 @@ export default class UrlsController {
   /**
    * Handle form submission for the edit action
    */
-  async update({ params, request }: HttpContext) {}
+  async update({}: HttpContext) {}
 
   /**
    * Delete record
@@ -67,10 +67,10 @@ export default class UrlsController {
   async destroy({ params }: HttpContext) {}
 
   async upload({ request, response, session }: HttpContext) {
-    // Récupération du fichier HttpContext
+    // Récupération du fichier Excel
     const file = request.file('excelFile', {
-      extnames: ['xls', 'xlsx'], // Extensions autorisées
-      size: '2mb', // Taille maximale autorisée
+      extnames: ['xls', 'xlsx'],
+      size: '2mb',
     })
 
     if (!file) {
@@ -98,37 +98,45 @@ export default class UrlsController {
     try {
       // Charger le fichier Excel
       const workbook = xlsx.readFile(file.filePath!)
-      const sheetName = workbook.SheetNames[0] // Utilise la première feuille du fichier
+      const sheetName = workbook.SheetNames[0] // Utilise la première feuille
       const sheet = workbook.Sheets[sheetName]
 
       // Convertir les données de la feuille en JSON
-      const data = xlsx.utils.sheet_to_json<{ URL: string }>(sheet)
-      // Vérifier si la colonne "URL" est présente
-      if (data.length === 0 || !data[0].URL) {
-        session.flash({ error: 'La colonne "URL" est manquante dans le fichier.' })
-        return response.redirect().back()
-      }
+      const data = xlsx.utils.sheet_to_json(sheet)
 
-      // Insérer les URLs dans la base de données
-      for (const row of data) {
-        if (!row.URL) continue
+      // Ajouter une colonne avec l'URL générée
+      const updatedData = data.map((row: any, index) => {
+        const generatedUrl = `https://example.com/campaign/${campaign.id}/row/${index + 1}`
+        return {
+          ...row,
+          GeneratedURL: generatedUrl,
+        }
+      })
 
-        await Url.create({
-          originalUrl: row.URL,
-          campaignId: campaign.id,
-          clicksCount: 0, // Initialiser les clics à 0
-          expiresAt: null, // Définir une date d'expiration si besoin
-        })
-      }
+      // Convertir les données mises à jour en feuille Excel
+      const updatedSheet = xlsx.utils.json_to_sheet(updatedData)
+      const updatedWorkbook = xlsx.utils.book_new()
+      xlsx.utils.book_append_sheet(updatedWorkbook, updatedSheet, sheetName)
 
-      session.flash({ success: 'Les URLs ont été importées avec succès.' })
-      return response.redirect().back()
+      // Sauvegarder le nouveau fichier Excel dans un répertoire temporaire
+      const newFileName = `updated_${file.clientName}`
+      const filePath = app.tmpPath(`uploads/${newFileName}`)
+      xlsx.writeFile(updatedWorkbook, filePath)
+
+      // Retourner le fichier Excel modifié en réponse
+      response.header(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      )
+      response.header('Content-Disposition', `attachment; filename="${newFileName}"`)
+      return response.download(filePath)
     } catch (error) {
       console.error(error)
-      session.flash({ error: 'Une erreur est survenue lors de l’importation.' })
+      session.flash({ error: 'Une erreur est survenue lors du traitement du fichier.' })
       return response.redirect().back()
     }
   }
+
   async datatable({ request, response }: HttpContext) {
     const draw = request.input('draw') // Numéro de dessin (draw) pour DataTables
     const start = request.input('start') // Index de départ pour la pagination
@@ -192,8 +200,8 @@ export default class UrlsController {
       shortUrl: url.shortUrl,
       clicksCount: url.clicksCount,
       campaign: url.campaign ? url.campaign.name : 'N/A', // Afficher le nom de la campagne ou 'N/A'
-      createdAt: url.createdAt.toString(),
-      expiresAt: url.expiresAt ? url.expiresAt.toString() : 'N/A', // Afficher la date d'expiration ou 'N/A'
+      createdAt: url.createdAt.toFormat('dd/MM/yyyy HH:mm:ss'), // Formater la date de création
+      expiresAt: url.expiresAt ? url.expiresAt.toFormat('dd/MM/yyyy HH:mm:ss') : 'N/A', // Formater la date d'expiration ou 'N/A'
     }))
 
     return response.json({

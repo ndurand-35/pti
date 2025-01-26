@@ -69,5 +69,15 @@ export default class CampaignsController {
   /**
    * Delete record
    */
-  async destroy({ params }: HttpContext) {}
+  async destroy({ params }: HttpContext) {
+    const campaignId = params.id
+    const campagne = await Campaign.findOrFail(campaignId)
+    await campagne.delete()
+  }
+
+  async createUrl({ params }: HttpContext) {
+    const campaignId = params.id
+    const campagne = await Campaign.findOrFail(campaignId)
+    await campagne.delete()
+  }
 }

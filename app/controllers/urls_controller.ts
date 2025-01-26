@@ -3,7 +3,6 @@ import Url from '#models/url'
 import { createUrl } from '#validators/urls'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
-import { column } from '@adonisjs/lucid/orm'
 import xlsx from 'xlsx'
 import { applyColumnFilter, applyGlobalFilter } from '../helpers/querySql.js'
 
@@ -16,7 +15,9 @@ export default class UrlsController {
     const limit = 10 // Nombre d'utilisateurs par page
 
     const urls = await Url.query().orderBy('created_at', 'desc').paginate(page, limit) // Récupère les campagnes triés par date de création
-    return view.render('pages/admin/url/index', { urls })
+
+    const campaigns = await Campaign.query()
+    return view.render('pages/admin/url/index', { urls, campaigns })
   }
 
   /**

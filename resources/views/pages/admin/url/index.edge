@@ -1,0 +1,251 @@
+@layout.admin({ title: "Liste des Urls" })
+
+  @slot('main')
+    <div class="container mx-auto p-6">
+      <div class="flex flex-row justify-between mb-4">
+        <h1 class="text-3xl font-bold">
+          Liste des URLS
+        </h1>
+        <div class="space-x-2">
+          <a
+            href="{{ route('admin.urls.create') }}"
+            class="px-4 py-2 h-min text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring focus:ring-primary-300 transition"
+          >
+            Nouveau
+        </a>
+          <button
+            onclick="displayUploadModal()"
+            class="px-4 py-2 h-min cursor-pointer rounded-lg text-white bg-accent-600 hover:bg-accent-700 focus:outline-none focus:ring focus:ring-accent-300 transition"
+          >
+            <i class="fa-solid fa-upload"></i>
+          </button>
+        </div>
+      </div>
+
+      <table id="urlDatatable" class="table-auto w-full">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th class="px-4 py-2">
+              ID
+            </th>
+            <th class="px-4 py-2">
+              Url
+            </th>
+            <th class="px-4 py-2">
+              Lien Originel
+            </th>
+            <th class="px-4 py-2">
+              Key
+            </th>
+            <th class="px-4 py-2">
+              Click
+            </th>
+            <th class="px-4 py-2">
+              Campagne
+            </th>
+            <th class="px-4 py-2">
+              Date de création
+            </th>
+            <th class="px-4 py-2">
+              Expires At
+            </th>
+            <th class="px-4 py-2">
+              Action
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-row space-x-2 items-center" id="custom-filter">
+      <select
+        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring focus:ring-primary-300"
+        onchange='onCampaignChange(value)'
+      >
+        <option>
+        </option>
+        @each(sCampaign in campaigns)
+          <option value="{{ sCampaign.id }}">
+            {{ sCampaign.name }}
+          </option>
+        @end
+      </select>
+    </div>
+    @!component('components/upload-modal', {
+      modalId: 'excelUploadModal',
+      action: route('admin.urls.upload.excel'),
+      campaigns: campaigns,
+    campaign: campaign  })
+
+    <script>
+      let table = $("#urlDatatable").DataTable({
+        ...defaultDatatableConfig,
+        layout: {
+          topStart: "search",
+          bottomStart: "pageLength",
+          bottom2Start: "info",
+          bottomEnd: "paging",
+          topEnd: {
+            buttons: [ {
+              text: '<i class="fa-solid fa-file-excel"></i>',
+              className: "cursor-pointer text-accent-500 mt-2 border border-accent-500 hover:bg-accent-500 hover:text-white py-2 px-2.5 rounded text-lg inline-flex transition",
+              action: function(e, dt, node, config) {
+                const btn = e.currentTarget;
+                const icon = btn.querySelector("i");
+                btn.disabled = true;
+                icon.classList.remove("fa-file-excel", "text-red-400", "fa-circle-exclamation");
+                icon.classList.add("animate-spin", "fa-spinner");
+                $.ajax({
+                  url: "{{ route('admin.urls.datatable.excel')}}",
+                  data: dt.ajax.params(),
+                  success: function(res, status, xhr) {
+                    if (res && res.file) {
+                      const link = document.createElement("a");
+                      link.href = res.file;
+                      link.setAttribute("download", `export_${Date.now()}.xlsx`);
+                      document.body.append(link);
+                      link.click();
+                      link.remove();
+                      btn.disabled = false;
+                      icon.classList.add("fa-file-excel");
+                      icon.classList.remove("animate-spin", "fa-spinner");
+                    }
+                  },
+                  error: () => {
+                    btn.disabled = false;
+                    icon.classList.add("fa-circle-exclamation", "text-red-400");
+                    icon.classList.remove("animate-spin", "fa-spinner");
+                  }
+                });
+              }
+            } ]
+          }
+        },
+        ajax: {
+          url: "{{ route('admin.urls.datatable') }}"
+        },
+        columns: [ {
+          data: "id",
+          name: "id"
+        }, {
+          data: "shortUrl",
+          name: "shortUrl",
+          render: data => {
+            return `<a href="/${data}" target="_blank" class="hover:text-primary-600 transition">${data}<i class="ml-2 fa-solid fa-link"></i></a>`;
+          }
+        }, {
+          data: "originalUrl",
+          name: "originalUrl",
+          render: data => {
+            return `<a href="${data}" target="_blank" class="hover:text-primary-600 transition"><i class="fa-solid fa-link"></i></a>`;
+          }
+        }, {
+          data: "matchingKey",
+          name: "matchingKey"
+        }, {
+          data: "clicksCount",
+          name: "clicksCount"
+        }, {
+          name: "campaignId",
+          data: "campaign"
+        }, {
+          data: "createdAt",
+          name: "createdAt",
+          searchable: false
+        }, {
+          data: "expiresAt",
+          name: "expiresAt",
+          searchable: false
+        }, {
+          data: "action",
+          name: "action",
+          searchable: false,
+          orderable: false,
+          class: "space-x-2 dt-tools",
+          render: createManageBtn
+        } ]
+      });
+      /* SUPRESSION CATCHER */
+      
+      table.on("click", "td.dt-tools .delete-button", function(e) {
+        const data = table.row(e.target.closest("tr")).data();
+        deleteUrl(data.id);
+      });
+      
+      const BUTTON_COMMON_CLASS = [ "text-center", "inline-flex", "items-center", "transition", "duration-300", "ease-in-out", "cursor-pointer" ];
+      
+      function createManageBtn(data, type, row) {
+        let buttonDiv = document.createElement("div");
+        buttonDiv.classList.add(...[ "flex", "flex-row", "space-x-2" ]);
+        /* Bouton de suppression */
+        let deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.id = "delete-button";
+        deleteButton.classList.add(...[ "tooltip", "delete-button", "text-red-500", "hover:text-red-700", ...BUTTON_COMMON_CLASS ]);
+        let deleteButtonIcon = document.createElement("i");
+        deleteButtonIcon.classList.add(...[ "text-md", "fas", "fa-trash" ]);
+        deleteButton.appendChild(deleteButtonIcon);
+        buttonDiv.appendChild(deleteButton);
+        return buttonDiv.outerHTML;
+      }
+    </script>
+
+    <script>
+      function onCampaignChange(value) {
+        console.log(value);
+        const column = table.column("campaignId:name");
+        column.search(value, false, false).draw();
+      }
+      
+      async function deleteUrl(urlId) {
+        if (confirm("Voulez-vous vraiment supprimer cet URL ?")) {
+          const response = await fetch(`{{ route('admin.urls.destroy', { id: ':id' }) }}`.replace(":id", urlId), {
+            method: "DELETE",
+            headers: {
+              "X-CSRF-TOKEN": "{{ csrfToken }}",
+              "Content-Type": "application/json"
+            }
+          });
+          if (response.ok) {
+            location.reload();
+          } else {
+            alert("Une erreur est survenue lors de la suppression.");
+          }
+        }
+      }
+    </script>
+    <script>
+      // Affiche le popover personnalisé au survol
+      function showCustomPopover(button) {
+        const popover = button.nextElementSibling;
+        popover.textContent = "Copier l'URL"; // Texte par défaut
+        popover.style.opacity = "1"; // Montre le popover
+      }
+      // Cache le popover personnalisé lorsqu'on quitte le bouton
+      
+      function hideCustomPopover(button) {
+        const popover = button.nextElementSibling;
+        popover.style.opacity = "0"; // Cache le popover
+      }
+      // Copie l'URL et met à jour le texte du popover personnalisé
+      
+      function copyToClipboardWithCustomPopover(button, shortUrl) {
+        const fullUrl = `${window.location.origin}/${shortUrl}`;
+        navigator.clipboard.writeText(fullUrl).then(() => {
+          const popover = button.nextElementSibling;
+          popover.textContent = "Lien copié !"; // Change le texte après la copie
+          // Réinitialise le texte après 2 secondes
+          setTimeout(() => {
+            if (popover.textContent === "Lien copié !") {
+              popover.textContent = "Copier l'URL";
+            }
+          }, 2e3);
+        }).catch(err => {
+          console.error("Erreur lors de la copie : ", err);
+        });
+      }
+    </script>
+
+  @endslot
+@end

@@ -45,7 +45,7 @@
           <option>
           </option>
           @each(sCampaign in campaigns)
-            @if(campaign.id == sCampaign.id)
+            @if(campaign && campaign.id == sCampaign.id)
               <option value="{{ sCampaign.id }}" selected>
               @else
                 <option value="{{ sCampaign.id }}">

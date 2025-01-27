@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: pti
+    restart: unless-stopped
+    ports:
+      - '3333:3333'
+    volumes:
+      - ./volumes/logs:/app/logs
+      - ./volumes/db:/app/tmp
+    env_file:
+      - .env

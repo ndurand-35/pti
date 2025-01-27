@@ -32,100 +32,103 @@
       
     </script>
     <script src="/js/library/datatable/dataTables.buttons.min.js">
+      
     </script>
     <script src="/js/default-datatable-config.js">
+      
     </script>
+    <!-- End of Datatable -->
 
-  </script>
-  <link rel="stylesheet" href="/style/library/datatable.css" />
-  <link rel="stylesheet" href="/style/datatable-tailwind.css" />
-  <!-- End of Datatable -->
-
-  <!-- Meta tags -->
-  @if ($slots.meta)
-    {{{ await $slots.meta() }}}
-  @endif
+    <!-- Meta tags -->
+    @if ($slots.meta)
+      {{{ await $slots.meta() }}}
+    @endif
     
-  <!-- CSS et JS via Vite -->
-  @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+    <!-- CSS et JS via Vite -->
+    @vite([
+    'resources/css/app.css',
+    'resources/css/datatable-tailwind.css',
+    'resources/css/library/datatable.css',
+    'resources/js/app.js'
+    ])
+  </head>
 
-<body class="bg-gray-200 text-gray-800">
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside class="bg-gray-200 w-64 p-2 flex flex-col justify-between">
-      <div>
-        <div class="mb-6 flex flex-row space-x-04 px-2 items-center">
-          <img src="/images/logo.png" class="w-12" />
-          <h1 class="dosis text-2xl font-bold">
-            Pti
-          </h1>
-        </div>
-        <nav>
-          <ul class="space-y-4">
-            <li>
-              <a href="/admin/dashboard" class="block  hover:bg-primary-300 px-4 py-2 rounded space-x-2">
-                <i class="fa-solid fa-house"></i>
-                <span>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="{{ route('admin.campaigns.index') }}"
-                class="block hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
-              >
-                <i class="fa-solid fa-bullseye"></i>
-                <span>Campagne</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="{{ route('admin.urls.index') }}"
-                class="block hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
-              >
-                <i class="fa-solid fa-link"></i>
-                <span>Url</span>
-              </a>
-            </li>
-            <li>
-              <a
-                href="{{ route('admin.users.index') }}"
-                class="block hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
-              >
-                <i class="fa-solid fa-user"></i>
-                <span>Utilisateur</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/settings" class="block  hover:bg-primary-300 px-4 py-2 rounded transition">
-                Settings
+  <body class="bg-gray-200 text-gray-800">
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="bg-gray-200 w-64 p-2 flex flex-col justify-between">
+        <div>
+          <div class="mb-6 flex flex-row space-x-04 px-2 items-center">
+            <img src="/images/logo.png" class="w-12" />
+            <h1 class="dosis text-2xl font-bold">
+              Pti
+            </h1>
+          </div>
+          <nav>
+            <ul class="space-y-4">
+              <li>
+                <a href="/admin/dashboard" class="block  hover:bg-primary-300 px-4 py-2 rounded space-x-2">
+                  <i class="fa-solid fa-house"></i>
+                  <span>Dashboard</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{{ route('admin.campaigns.index') }}"
+                  class="block hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
+                >
+                  <i class="fa-solid fa-bullseye"></i>
+                  <span>Campagne</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{{ route('admin.urls.index') }}"
+                  class="block hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
+                >
+                  <i class="fa-solid fa-link"></i>
+                  <span>Url</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="{{ route('admin.users.index') }}"
+                  class="block hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
+                >
+                  <i class="fa-solid fa-user"></i>
+                  <span>Utilisateur</span>
+                </a>
+              </li>
+              <li>
+                <a href="/admin/settings" class="block  hover:bg-primary-300 px-4 py-2 rounded transition">
+                  Settings
             </a>
-            </li>
-          </ul>
-        </nav>
-      </div>
-      <a
-        href="{{ route('admin.logout') }}"
-        class="block  hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <a
+          href="{{ route('admin.logout') }}"
+          class="block  hover:bg-primary-300 px-4 py-2 rounded transition space-x-2"
+        >
+          <i class="fa-solid fa-right-from-bracket"></i>
+          <span>Déconnexion</span>
+        </a>
+      </aside>
+
+      <!-- Main Content -->
+      <div
+        class="min-h-[calc(100vh - 4px)] my-2 flex flex-col justify-between w-full bg-gray-100 rounded-s-lg border border-gray-300"
       >
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span>Déconnexion</span>
-      </a>
-    </aside>
+        <!-- Header -->
 
-    <!-- Main Content -->
-    <div
-      class="min-h-[calc(100vh - 4px)] my-2 flex flex-col justify-between w-full bg-gray-100 rounded-s-lg border border-gray-300"
-    >
-      <!-- Header -->
+        <!-- Main Content Area -->
+        <main class="my-2">
+          {{{ await $slots.main() }}}
+        </main>
 
-      <!-- Main Content Area -->
-      <main class="my-2">
-        {{{ await $slots.main() }}}
-      </main>
-
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 
 </html>

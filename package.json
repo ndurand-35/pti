@@ -62,6 +62,7 @@
     "@adonisjs/static": "^1.1.1",
     "@adonisjs/vite": "^4.0.0",
     "@tailwindcss/postcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
     "@vinejs/vine": "^3.0.0",
     "better-sqlite3": "^11.8.1",
     "edge.js": "^6.2.0",
